@@ -102,7 +102,7 @@ int len;
 	  wprintf(L" ");
 	  break;
 	case '\n':
-	  wprintf(L"\n");
+	  punctuation(L"\n");
 	  break;
 	case 0xf00:
 	  wprintf(L"o%lc", 0x1e43);
@@ -132,13 +132,18 @@ int len;
 	  consonant(L"\u1e45"); /* with dot above */
 	  break;
 	case 0xf59: /* TSA */
+	case 0xf45: /* CA */
 	  consonant(L"c"); /* Sanskrit CA is transliterated as TSA */
 	  break;
 	case 0xf5a: /* TSHA */
+	case 0xf46: /* CHA */
 	  consonant(L"ch");
 	  break;
 	case 0xf5b: /* DZA */
 	  consonant(L"j"); /* Sanskrit JA is transliterated as DZA */
+	  break;
+	case 0xf5c: /* DZHA */
+	  consonant(L"jh");
 	  break;
 	case 0xf49: /* NYA */
 	  consonant(L"\u00f1"); /* n with tilde */
@@ -151,6 +156,9 @@ int len;
 	  break;
 	case 0xf4c: /* DDA */
 	  consonant(L"\u1e0d"); /* d with dot below */
+	  break;
+	case 0xf4d: /* DDHA */
+	  consonant(L"\u1e0dh");
 	  break;
 	case 0xf4e: /* NNA */
 	  consonant(L"\u1e47"); /* n with dot below */
@@ -312,7 +320,7 @@ int len;
 	  break;
 	  /* What about DZHA? */
 	case 0xf99: /* subjoined NYA */
-	  subjoined_consonant(L"%\u00f1"); /* n with tilde */
+	  subjoined_consonant(L"\u00f1"); /* n with tilde */
 	  break;
 	case 0xf9a: /* subjoined TTA */
 	  subjoined_consonant(L"\u1e6d"); /* t with dot below */
