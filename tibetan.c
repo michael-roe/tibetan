@@ -39,6 +39,49 @@
 #include <locale.h>
 #include <wchar.h>
 
+static int vowel_wait;
+
+static void vowel(wchar_t *s)
+{
+  wprintf(L"%ls", s);
+  vowel_wait = 0;
+}
+
+static void anusvara(wchar_t *s)
+{
+  if (vowel_wait)
+  {
+    wprintf(L"a");
+    vowel_wait = 0;
+  }
+  wprintf(L"%ls", s);
+}
+
+static void consonant(wchar_t *s)
+{
+  if (vowel_wait)
+  {
+    wprintf(L"a");
+  }
+  wprintf(L"%ls", s);
+  vowel_wait = 1;
+}
+
+static void subjoined_consonant(wchar_t *s)
+{
+  wprintf(L"%ls", s);
+}
+
+static void punctuation(wchar_t *s)
+{
+  if (vowel_wait)
+  {
+    wprintf(L"a");
+    vowel_wait = 0;
+  }
+  wprintf(L"%s", s);
+}
+
 int main(int argc, char **argv)
 {
 wchar_t *cp;
@@ -65,295 +108,296 @@ int len;
 	  wprintf(L"o%lc", 0x1e43);
 	  break;
         case 0xf0b: /* tsheg - syllable divider */
-          wprintf(L"-");
+          punctuation(L"-");
 	  break;
 	case 0xf0d: /* shad - section break */
-	  wprintf(L"|\n");
+	  punctuation(L"|\n");
 	  break;
 	case 0xf14: /* gter tsheg - a "comma like delimiter" */
-	  wprintf(L";");
+	  punctuation(L";");
 	  break;
 	case 0xf40: /* KA */
-	  wprintf(L"k");
+	  consonant(L"k");
 	  break;
 	case 0xf41: /* KHA */
-	  wprintf(L"kh");
+	  consonant(L"kh");
 	  break;
 	case 0xf42: /* GA */
-	  wprintf(L"g");
+	  consonant(L"g");
 	  break;
 	case 0xf43: /* GHA */
-	  wprintf(L"gh");
+	  consonant(L"gh");
 	  break;
         case 0xf44: /* NGA */
-	  wprintf(L"%lc", 0x1e45); /* with dot above */
+	  consonant(L"\u1e45"); /* with dot above */
 	  break;
 	case 0xf59: /* TSA */
-	  wprintf(L"c"); /* Sanskrit CA is transliterated as TSA */
+	  consonant(L"c"); /* Sanskrit CA is transliterated as TSA */
 	  break;
 	case 0xf5a: /* TSHA */
-	  wprintf(L"ch");
+	  consonant(L"ch");
 	  break;
 	case 0xf5b: /* DZA */
-	  wprintf(L"j"); /* Sanskrit JA is transliterated as DZA */
+	  consonant(L"j"); /* Sanskrit JA is transliterated as DZA */
 	  break;
 	case 0xf49: /* NYA */
-	  wprintf(L"%lc", 0xf1); /* n with tilde */
+	  consonant(L"\u00f1"); /* n with tilde */
 	  break;
 	case 0xf4a: /* TTA */
-	  wprintf(L"%lc", 0x1e6d); /* t with dot below */
+	  consonant(L"\u1e6d"); /* t with dot below */
 	  break;
 	case 0xf4b: /* TTHA */
-	  wprintf(L"%lch", 0x1e6d); /* t with dot below */
+	  consonant(L"\u1e6d"); /* t with dot below */
 	  break;
 	case 0xf4c: /* DDA */
-	  wprintf(L"%lc", 0x1e0d); /* d with dot below */
+	  consonant(L"\u1e0d"); /* d with dot below */
 	  break;
 	case 0xf4e: /* NNA */
-	  wprintf(L"%lc", 0x1e47); /* n with dot below */
+	  consonant(L"\u1e47"); /* n with dot below */
 	  break;
 	case 0xf4f: /* TA */
-	  wprintf(L"t");
+	  consonant(L"t");
 	  break;
 	case 0xf50: /* THA */
-	  wprintf(L"th");
+	  consonant(L"th");
 	  break;
 	case 0xf51: /* DA */
-	  wprintf(L"d");
+	  consonant(L"d");
 	  break;
 	case 0xf52: /* DHA */
-	  wprintf(L"dh");
+	  consonant(L"dh");
 	  break;
 	case 0xf53: /* NA */
-	  wprintf(L"n");
+	  consonant(L"n");
 	  break;
 	case 0xf54: /* PA */
-	  wprintf(L"p");
+	  consonant(L"p");
 	  break;
 	case 0xf55: /* PHA */
-	  wprintf(L"ph");
+	  consonant(L"ph");
 	  break;
 	case 0xf56: /* BA */
-	  wprintf(L"b");
+	  consonant(L"b");
 	  break;
 	case 0xf57: /* BHA */
-	  wprintf(L"bh");
+	  consonant(L"bh");
 	  break;
 	case 0xf58: /* MA */
-	  wprintf(L"m");
+	  consonant(L"m");
 	  break;
 	case 0xf61: /* YA */
-	  wprintf(L"y");
+	  consonant(L"y");
 	  break;
 	case 0xf62: /* RA */
 	  if (cp[1] == 0xf80)
           {
-	    wprintf(L"%lc", 0x1e5b);
+	    vowel(L"\u1e5b");
 	    cp++;
 	  }
 	  else if ((cp[1] == 0xf71) && (cp[2] == 0xf80))
 	  {
-            wprintf(L"%lc", 0x1e5d);
+            vowel(L"\u1e5d");
 	    cp += 2;
 	  }
 	  else
-	    wprintf(L"r");
+	    consonant(L"r");
 	  break;
 	case 0xf63: /* LA */
 	  if (cp[1] == 0xf80)
 	  {
-	    wprintf(L"%lc", 0x1e37);
+	    vowel(L"\u1e37");
 	    cp++;
 	  }
 	  else if ((cp[1] == 0xf71) && (cp[2] == 0xf80))
 	  {
-            wprintf(L"%lc", 0x1e39);
+            vowel(L"\u1e39");
 	    cp += 2;
 	  }
 	  else
-	    wprintf(L"l");
+	    consonant(L"l");
 	  break;
 	case 0xf5d: /* WA */
-	  wprintf(L"v");
+	  consonant(L"v");
 	  break;
 	case 0xf64: /* SHA */
-	  wprintf(L"%lc", 0x15b); /* s with acute */
+	  consonant(L"\u015b"); /* s with acute */
 	  break;
 	case 0xf65:
-	  wprintf(L"%lc", 0x1e63); /* s with dot below */
+	  consonant(L"\u1e63"); /* s with dot below */
 	  break;
 	case 0xf66: /* SA */
-	  wprintf(L"s");
+	  consonant(L"s");
 	  break;
 	case 0xf67: /* HA */
-	  wprintf(L"h");
+	  consonant(L"h");
 	  break;
 	case 0xf68: /* Vowel with no consonant */
+	  vowel_wait = 1;
 	  break;
 	/* Vowels */
 	case 0xf71: /* AA */
 	  if (cp[1] == 0xf72)
 	  {
-	    wprintf(L"%lc", 0x12b); /* i with macron */
+	    vowel(L"\u012b"); /* i with macron */
 	    cp++;
 	  }
 	  else if (cp[1] == 0xf74)
 	  {
-	    wprintf(L"%lc", 0x16b); /* u with macron */
+	    vowel(L"\u016b"); /* u with macron */
 	    cp++;
 	  }
 	  else
-	    wprintf(L"%lc", 0x101); /* a with macron */
+	    vowel(L"\u0101"); /* a with macron */
 	  break;
 	case 0xf72: /* I */
-	  wprintf(L"i");
+	  vowel(L"i");
 	  break;
 	case 0xf73: /* II */
 	  /* "discouraged" in the Unicode standard */
-	  wprintf(L"%lc", 0x12b); /* i with macron */
+	  vowel(L"\u012b"); /* i with macron */
 	  break;
 	case 0xf74: /* U */
-	  wprintf(L"u");
+	  vowel(L"u");
 	  break;
 	case 0xf75: /* UU, "discouraged" */
-	  wprintf(L"%lc", 0x16b); /* u with macron */
+	  vowel(L"\u016b"); /* u with macron */
 	  break;
 	case 0xf7a: /* E */
-	  wprintf(L"e");
+	  vowel(L"e");
 	  break;
 	case 0xf7b: /* EE */
-	  wprintf(L"ai"); /* Apparently, Sanskrit AI is transliterated as EE */
+	  vowel(L"ai"); /* Apparently, Sanskrit AI is transliterated as EE */
 	  break;
 	case 0xf7c: /* O */
-	  wprintf(L"o");
+	  vowel(L"o");
 	  break;
 	case 0xf7d: /* OO */
-	  wprintf(L"au"); /* Sanskrit AU is transliterated as OO */
+	  vowel(L"au"); /* Sanskrit AU is transliterated as OO */
 	  break;
 	case 0xf7e: /* anusvara */
-	  wprintf(L"%lc", 0x1e43); /* m with dot below */
+	  anusvara(L"\u1e43"); /* m with dot below */
 	  break;
 	case 0xf7f: /* visarga */
-	  wprintf(L"%lc", 0x1e25); /* h with dot below */
+	  anusvara(L"\u1e25"); /* h with dot below */
 	  break;
 	case 0xf83: /* candrabindu */
-	  wprintf(L"~");
+	  anusvara(L"~");
 	  break;
 	/* Subjoined characters */
 	case 0xf90: /* subjoined KA */
-	  wprintf(L"k");
+	  subjoined_consonant(L"k");
 	  break;
 	case 0xf91: /* subjoined KHA */
-	  wprintf(L"kh");
+	  subjoined_consonant(L"kh");
 	  break;
 	case 0xf92: /* subjoined GA */
-	  wprintf(L"g");
+	  subjoined_consonant(L"g");
 	  break;
 	case 0xf93: /* subjoined GHA */
-	  wprintf(L"gh");
+	  subjoined_consonant(L"gh");
 	  break;
         case 0xf94: /* subjoined NGA */
-	  wprintf(L"%lc", 0x1e45); /* n with dot above */
+	  subjoined_consonant(L"\u1e45"); /* n with dot above */
 	  break;
 	case 0xfa9: /* subjoined TSA */
 	case 0xf95: /* subjoined CA */
-	  wprintf(L"c"); /* Sanskrit CA is transliterated as TSA */
+	  subjoined_consonant(L"c"); /* Sanskrit CA is transliterated as TSA */
 	  break;
 	case 0xfaa: /* subjoined TSHA */
 	case 0xf96: /* subjoined CHA */
-	  wprintf(L"ch");
+	  subjoined_consonant(L"ch");
 	  break;
 	case 0xfab: /* subjoined DZA */
-	  wprintf(L"j"); /* Sanskrit JA is transliterated as DZA */
+	  subjoined_consonant(L"j"); /* Sanskrit JA is transliterated as DZA */
 	  break;
 	  /* What about DZHA? */
 	case 0xf99: /* subjoined NYA */
-	  wprintf(L"%lc", 0xf1); /* n with tilde */
+	  subjoined_consonant(L"%\u00f1"); /* n with tilde */
 	  break;
 	case 0xf9a: /* subjoined TTA */
-	  wprintf(L"%lc", 0x1e6d); /* t with dot below */
+	  subjoined_consonant(L"\u1e6d"); /* t with dot below */
 	  break;
 	case 0xf9b: /* subjoined TTHA */
-	  wprintf(L"%lch", 0x1e6d); /* t with dot below */
+	  subjoined_consonant(L"\u1e6d"); /* t with dot below */
 	  break;
 	case 0xf9c: /* subjoined DDA */
-	  wprintf(L"%lc", 0x1e0d); /* d with dot below */
+	  subjoined_consonant(L"\u1e0d"); /* d with dot below */
 	  break;
 	case 0xf9e: /* subjoined NNA */
-	  wprintf(L"%lc", 0x1e47); /* n with dot below */
+	  subjoined_consonant(L"\u1e47"); /* n with dot below */
 	  break;
 	case 0xf9f: /* subjoined TA */
-	  wprintf(L"t");
+	  subjoined_consonant(L"t");
 	  break;
 	case 0xfa0: /* subjoined THA */
-	  wprintf(L"th");
+	  subjoined_consonant(L"th");
 	  break;
 	case 0xfa1: /* subjoined DA */
-	  wprintf(L"d");
+	  subjoined_consonant(L"d");
 	  break;
 	case 0xfa2: /* subjoined DHA */
-	  wprintf(L"dh");
+	  subjoined_consonant(L"dh");
 	  break;
 	case 0xfa3: /* subjoined NA */
-	  wprintf(L"n");
+	  subjoined_consonant(L"n");
 	  break;
 	case 0xfa4: /* subjoined PA */
-	  wprintf(L"p");
+	  subjoined_consonant(L"p");
 	  break;
 	case 0xfa5: /* subjoined PHA */
-	  wprintf(L"ph");
+	  subjoined_consonant(L"ph");
 	  break;
 	case 0xfa6: /* subjoined BA */
-	  wprintf(L"b");
+	  subjoined_consonant(L"b");
 	  break;
 	case 0xfa7: /* subjoined BHA */
-	  wprintf(L"bh");
+	  subjoined_consonant(L"bh");
 	  break;
 	case 0xfa8: /* subjoined MA */
-	  wprintf(L"m");
+	  subjoined_consonant(L"m");
 	  break;
 	case 0xfb1: /* subjoined YA */
-	  wprintf(L"y");
+	  subjoined_consonant(L"y");
 	  break;
 	case 0xfb2: /* subjoined RA */
 	  if (cp[1] == 0xf80)
           {
-            wprintf(L"%lc", 0x1e5b);
+            vowel(L"\u1e5b");
 	    cp++;
 	  }
 	  else if ((cp[1] == 0xf71) && (cp[2] == 0xf80))
 	  {
-            wprintf(L"%lc", 0x1e5d);
+            vowel(L"\u1e5d");
             cp += 2;
           }
 	  else
-	    wprintf(L"r");
+	    subjoined_consonant(L"r");
 	  break;
-	case 0xfb3: /* subjoinmed LA */
+	case 0xfb3: /* subjoined LA */
 	  if (cp[1] == 0xf80)
 	  {
-	    wprintf(L"%lc", 0x1e37);
+	    vowel(L"\u1e37");
 	    cp++;
 	  }
 	  else if ((cp[1] == 0xf71) && (cp[2] == 0xf80))
 	  {
-            wprintf(L"%lc", 0x1e39);
+            vowel(L"\u1e39");
 	    cp += 2;
 	  }
 	  else
-	    wprintf(L"l");
+	    subjoined_consonant(L"l");
 	  break;
 	case 0xfad: /* subjoined WA */
-	  wprintf(L"v"); /* Use v rather than w in Sanskrit transliteration */
+	  subjoined_consonant(L"v"); /* Use v rather than w in Sanskrit transliteration */
 	  break;
 	case 0xfb4: /* subjoined SHA */
-	  wprintf(L"%lc", 0x15b); /* s with acute */
+	  subjoined_consonant(L"%\u015b"); /* s with acute */
 	  break;
 	case 0xfb5: /* subjoined SSA */
-	  wprintf(L"%lc", 0x1e63); /* s with dot below */
+	  subjoined_consonant(L"\u1e63"); /* s with dot below */
 	  break;
 	case 0xfb7: /* subjoined HA */
-	  wprintf(L"h");
+	  subjoined_consonant(L"h");
 	  break;
 	default:
           wprintf(L"%x ", *cp);
